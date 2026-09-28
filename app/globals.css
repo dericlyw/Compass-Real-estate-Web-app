@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { background: #0B0B0C; color: #EDE8DF; }
+body { font-family: 'DM Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .font-display { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.01em; }
+
+@layer components {
+  .card { @apply rounded-xl border border-ink-600 bg-ink-800/80 p-5; }
+  .eyebrow { @apply text-[11px] uppercase tracking-[0.22em] text-gold; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md border border-gold/60 px-3.5 py-2 text-sm font-medium text-gold transition hover:bg-gold hover:text-ink disabled:cursor-not-allowed disabled:opacity-40; }
+  .btn-solid { @apply btn bg-gold text-ink hover:bg-gold-light; }
+  .btn-ghost { @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm text-bone-muted hover:bg-ink-700 hover:text-bone; }
+  .input { @apply w-full rounded-md border border-ink-500 bg-ink-900 px-3 py-2 text-sm text-bone placeholder:text-bone-dim focus:border-gold focus:outline-none; }
+  .label { @apply mb-1 block text-xs font-medium uppercase tracking-wider text-bone-muted; }
+  .table { @apply w-full text-left text-sm; }
+  .table th { @apply border-b border-ink-600 pb-2 pr-4 text-[11px] font-medium uppercase tracking-wider text-bone-dim; }
+  .table td { @apply border-b border-ink-700 py-2.5 pr-4 align-top; }
+  .rule { @apply h-px w-full bg-gradient-to-r from-gold/60 via-gold/10 to-transparent; }
+}
+
+@media print {
+  html, body { background: #fff !important; color: #111 !important; }
+  .no-print { display: none !important; }
+  .card { border-color: #ddd !important; background: #fff !important; }
+}
