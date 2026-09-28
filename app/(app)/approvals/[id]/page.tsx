@@ -25,8 +25,15 @@ export default async function AssetPage({ params, searchParams }: { params: Prom
   return (
     <>
       <Link href="/approvals" className="btn-ghost mb-4 -ml-3">← Queue</Link>
-      <PageHeader eyebrow={`${angle.name} · ${LANG_LABEL[a.lang]} · ${FORMAT_SPEC[a.format].label} (${FORMAT_SPEC[a.format].aspect})`} title={a.id}>
+      <PageHeader eyebrow={`${a.engine ? "Content Engine" : angle.name} · ${LANG_LABEL[a.lang]} · ${FORMAT_SPEC[a.format].label} (${FORMAT_SPEC[a.format].aspect})`} title={a.id}>
         Persona: {persona.name}. Platforms: {a.platforms.join(", ")}. Status: <Badge tone={a.status === "approved" ? "ok" : a.status === "rejected" ? "bad" : blocked ? "bad" : "warn"}>{a.status.replace("_", " ")}</Badge>
+        {a.engine ? (
+          <span className="mt-2 block">
+            Angle: <span className="text-bone">&ldquo;{a.engine.angle}&rdquo;</span> · real detail: <span className="text-bone">{a.engine.signatureDetail}</span>
+            {a.engine.scheduledFor ? <> · scheduled {new Date(a.engine.scheduledFor).toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" })}</> : null}
+            {" · "}<Link href={`/engine/piece/${a.engine.pieceId}`} className="text-gold underline">Draft &amp; polish history</Link>
+          </span>
+        ) : null}
       </PageHeader>
       {error ? <Notice tone="bad">{error}</Notice> : null}
 
@@ -98,7 +105,7 @@ export default async function AssetPage({ params, searchParams }: { params: Prom
               })}
               <p className="pt-2 text-bone">Burned-in captions: {LANG_LABEL[a.lang]}. End card:</p>
               <p className="rounded border border-ink-600 bg-ink-900 p-2 text-bone">{a.endCard}</p>
-              {a.format === "carousel" ? (
+              {a.format === "carousel" && !a.engine ? (
                 <ol className="list-decimal pl-4 text-bone">{carouselCards[a.angleId][a.lang].map((c) => <li key={c}>{c}</li>)}</ol>
               ) : null}
             </div>

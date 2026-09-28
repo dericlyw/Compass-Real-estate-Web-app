@@ -13,7 +13,9 @@ export function rowsFor(s: Store, platform: Platform, siteUrl: string) {
     .flatMap((a) =>
       a.variants.map((v) => ({
         ad_name: adName(s.project, a, v),
-        angle: angles.find((x) => x.id === a.angleId)!.name,
+        angle: a.engine ? `Engine: ${a.engine.angle}` : (angles.find((x) => x.id === a.angleId)?.name ?? a.angleId),
+        source: a.engine ? "content_engine" : "launch",
+        scheduled_for: a.engine?.scheduledFor ?? "",
         persona: a.personaId,
         language: a.lang,
         format: FORMAT_SPEC[a.format].label,

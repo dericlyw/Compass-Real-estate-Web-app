@@ -7,6 +7,7 @@ const LINKS = [
   ["/", "Overview"],
   ["/project", "Project Intelligence"],
   ["/campaign", "Campaign Plan"],
+  ["/engine", "Content Engine"],
   ["/approvals", "Approval Queue"],
   ["/launch-kit", "Launch Kit"],
   ["/leads", "Lead Inbox"],

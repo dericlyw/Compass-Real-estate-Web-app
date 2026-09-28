@@ -9,6 +9,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const counts = {
     "/approvals": s.assets.filter((a) => a.status === "needs_review").length,
     "/leads": s.leads.filter((l) => l.stage === "new").length,
+    "/engine": (s.engine?.pieces ?? []).filter((p) => p.status === "polished").length,
   };
   return (
     <div className="mx-auto flex min-h-screen max-w-[1440px] flex-col md:flex-row">

@@ -5,10 +5,11 @@ import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { ARTIST_IMPRESSION } from "@/lib/data/copy-library";
+import { seedEngine } from "@/lib/data/engine-seed";
 import { claims, project as seedProject } from "@/lib/data/urban-forest";
 import { checkAsset, isBlocked } from "@/lib/engine/compliance";
 import { buildAssets, endCard } from "@/lib/engine/generate";
-import type { AuditEntry, CreativeAsset, Slot, Store } from "@/lib/types";
+import type { AuditEntry, CreativeAsset, EngineState, Slot, Store } from "@/lib/types";
 
 const DIR = process.env.PROPVID_DATA_DIR ?? path.join(process.cwd(), ".data");
 const FILE = path.join(DIR, "store.json");
@@ -60,10 +61,17 @@ export function seed(): Store {
     appointments: [],
     spend: [],
     audit: [],
+    engine: seedEngine(), // explicit so a workspace reset also resets the engine
   };
   for (const a of store.assets) recheck(store, a);
   store.audit.push(entry("system", "generate_campaign", seedProject.id, `${store.assets.length} assets generated across 4 angles × 3 languages`));
   return store;
+}
+
+/** The Content Engine state, created on first use so existing stores keep their data. */
+export function engineOf(s: Store): EngineState {
+  s.engine ??= seedEngine();
+  return s.engine;
 }
 
 export function entry(actor: string, action: string, target: string, detail?: string): AuditEntry {

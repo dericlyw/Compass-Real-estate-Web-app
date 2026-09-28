@@ -11,6 +11,7 @@ Source: `PRD — Video-to-Campaign Engine for Property Developers v1.0` and the 
 | 2 | Strategist + Creative + Compliance gate | **Done for pilot.** 4 angles, 30-day calendar, budget split; 48 assets × 3 copy variants in EN/BM/中文; 10-rule compliance gate. |
 | 3 | Approval queue + Launch kit + Landing pages | **Done.** Kanban queue with inline edit, AI rewrite, bulk approve, audit log; ZIP per platform (CSV + manifest + README, UTMs baked in); 4 trilingual landing pages with PDPA consent + WhatsApp CTA. |
 | 4 | Lead inbox + Booking + Dashboard | **Done (MVP).** Scored inbox with 2-minute SLA and drafted first reply; slot booking with 24h/2h reminders, pre-visit brief, outcome logging; dashboard + printable leadership one-pager. |
+| 6 | Content Engine MVP (`PRD_CONTENT_ENGINE.md` §9) | **Done.** Profile & baseline, Angle Bank with specificity check, Draft (Claude or paste-in prompt), Polish gate with generic-phrase linter (EN/BM/中文), weekly schedule + `.ics`, hand-off to approval queue / launch kit, scorecard, engine-angle attribution on the report. |
 | 5 | P1 features | Not started: Meta/TikTok lead webhooks, WhatsApp Cloud API qualifier, paused-ad push, Optimiser Agent, client portal. |
 
 ## Acceptance check (PRD §8)

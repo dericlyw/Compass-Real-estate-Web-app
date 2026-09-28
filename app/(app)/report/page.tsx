@@ -12,6 +12,10 @@ export default async function Report() {
   const byAngle = angles.map((a) => ({ name: a.name, f: funnel(s, (l) => l.angleId === a.id, (x) => x.angleId === a.id) }));
   const byPlatform = (Object.keys(PLATFORM_LABEL) as Platform[]).map((p) => ({ name: PLATFORM_LABEL[p], f: funnel(s, (l) => l.utm.utm_source === p, (x) => x.platform === p) }));
   const byLang = LANGS.map((l) => ({ name: l.toUpperCase(), f: funnel(s, (x) => x.lang === l, () => false) }));
+  // Content Engine pieces tag utm_campaign with their own angle code (lib/engine/naming.ts).
+  const byEngineAngle = (s.engine?.angles ?? [])
+    .filter((a) => a.status === "used")
+    .map((a) => ({ name: `${a.code} — ${a.sentence.slice(0, 48)}${a.sentence.length > 48 ? "…" : ""}`, f: funnel(s, (l) => l.utm.utm_campaign === `${s.project.slug}_${a.code}`, () => false) }));
   const demo = s.leads.some((l) => l.demo) || s.spend.some((x) => x.demo);
   const Table = ({ rows }: { rows: { name: string; f: ReturnType<typeof funnel> }[] }) => (
     <table className="table">
@@ -50,6 +54,9 @@ export default async function Report() {
         ))}
       </div>
       <Section title="By angle"><div className="card overflow-x-auto"><Table rows={byAngle} /></div></Section>
+      {byEngineAngle.length ? (
+        <Section title="By Content Engine angle (organic, leads only)"><div className="card overflow-x-auto"><Table rows={byEngineAngle} /></div></Section>
+      ) : null}
       <Section title="By platform"><div className="card overflow-x-auto"><Table rows={byPlatform} /></div></Section>
       <Section title="By language (leads only)"><div className="card overflow-x-auto"><Table rows={byLang} /></div></Section>
       <Section title="Log ad spend">
