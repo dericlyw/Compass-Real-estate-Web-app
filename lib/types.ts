@@ -318,4 +318,19 @@ export interface Store {
   audit: AuditEntry[];
   /** Added by the Content Engine; created lazily so existing stores keep their data. */
   engine?: EngineState;
+  /** Tester feedback collected in the app (/feedback). */
+  feedback?: FeedbackEntry[];
+}
+
+export type FeedbackKind = "bug" | "confusing" | "idea" | "good";
+export const FEEDBACK_LABEL: Record<FeedbackKind, string> = { bug: "Something broke", confusing: "Confusing", idea: "Idea / missing", good: "Works well" };
+
+export interface FeedbackEntry {
+  id: string;
+  at: string;
+  who: string;
+  page: string;
+  kind: FeedbackKind;
+  rating: number | null; // 1–5: "how useful would this be in your week?"
+  note: string;
 }

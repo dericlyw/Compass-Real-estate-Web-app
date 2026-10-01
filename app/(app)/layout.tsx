@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
-import { readStore } from "@/lib/data/store";
+import { testMode } from "@/lib/access";
+import { readStore, storageMode } from "@/lib/data/store";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     "/approvals": s.assets.filter((a) => a.status === "needs_review").length,
     "/leads": s.leads.filter((l) => l.stage === "new").length,
     "/engine": (s.engine?.pieces ?? []).filter((p) => p.status === "polished").length,
+    "/feedback": (s.feedback ?? []).length,
   };
   return (
     <div className="mx-auto flex min-h-screen max-w-[1440px] flex-col md:flex-row">
@@ -27,7 +29,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
         <Nav counts={counts} />
       </aside>
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-10">{children}</main>
+      <main className="min-w-0 flex-1 px-4 py-8 md:px-10">
+        {testMode() ? (
+          <p className="no-print mb-6 rounded-md border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-bone-muted">
+            <span className="text-gold">Test environment.</span> Nothing here is published or sent. Do not upload exported launch kits to live ad accounts.
+          </p>
+        ) : null}
+        {storageMode() === "ephemeral" ? (
+          <p className="no-print mb-6 rounded-md border border-bad/40 bg-bad/5 px-3 py-2 text-xs text-bad">
+            Storage is temporary on this host (no Supabase configured) — work may disappear. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+          </p>
+        ) : null}
+        {children}
+      </main>
     </div>
   );
 }

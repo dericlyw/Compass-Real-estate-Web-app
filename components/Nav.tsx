@@ -15,6 +15,7 @@ const LINKS = [
   ["/report", "Leadership Report"],
   ["/audit", "Audit Log"],
   ["/settings", "Settings"],
+  ["/feedback", "Feedback received"],
 ] as const;
 
 export function Nav({ counts }: { counts: Record<string, number> }) {
@@ -36,6 +37,12 @@ export function Nav({ counts }: { counts: Record<string, number> }) {
           </Link>
         );
       })}
+      <Link
+        href={`/feedback?from=${encodeURIComponent(path)}`}
+        className="mt-0 flex items-center whitespace-nowrap rounded-md border border-gold/40 px-3 py-2 text-sm text-gold transition hover:bg-gold/10 md:mt-4"
+      >
+        ✎ Give feedback on this page
+      </Link>
     </nav>
   );
 }

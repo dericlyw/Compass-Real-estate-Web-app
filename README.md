@@ -25,6 +25,13 @@ Then open **Settings** and enter the developer licence and APDL numbers — unti
 
 Optional: `ANTHROPIC_API_KEY` enables AI rewrites. See `.env.example`.
 
+## Hosted test (Vercel + Supabase)
+1. Supabase: run `supabase/migrations/0002_workspace_store.sql` in the SQL editor.
+2. Vercel: import this repo; set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PROPVID_ACCESS_CODE`, `NEXT_PUBLIC_SITE_URL` and optionally `ANTHROPIC_API_KEY`.
+3. Share the link, the access code and `docs/TEST_GUIDE.md` with testers. Their notes collect under **Feedback received** (CSV export).
+
+Without Supabase on a host the app warns that storage is temporary.
+
 ## Layout
 `app/` pages and server actions · `lib/engine/` compliance, generator, strategy, naming, leads, metrics · `lib/data/` case-study data and copy library · `supabase/migrations/` production schema with RLS · `worker/` ffmpeg/PySceneDetect/Whisper video worker · `docs/` plan, decisions, missing inputs, campaign brief.
 

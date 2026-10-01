@@ -11,7 +11,8 @@ import { checkAsset, isBlocked } from "@/lib/engine/compliance";
 import { buildAssets, endCard } from "@/lib/engine/generate";
 import type { AuditEntry, CreativeAsset, EngineState, Slot, Store } from "@/lib/types";
 
-const DIR = process.env.PROPVID_DATA_DIR ?? path.join(process.cwd(), ".data");
+// Vercel's filesystem is read-only except /tmp.
+const DIR = process.env.PROPVID_DATA_DIR ?? (process.env.VERCEL ? "/tmp/propvid" : path.join(process.cwd(), ".data"));
 const FILE = path.join(DIR, "store.json");
 const STORE_VERSION = 1;
 
@@ -78,30 +79,104 @@ export function entry(actor: string, action: string, target: string, detail?: st
   return { id: crypto.randomUUID(), at: new Date().toISOString(), actor, action, target, detail };
 }
 
-export async function readStore(): Promise<Store> {
-  try {
-    const s = JSON.parse(await fs.readFile(FILE, "utf8")) as Store;
-    if (s.version === STORE_VERSION) return s;
-  } catch {
-    // first run or unreadable — fall through to seed
-  }
+// ── Storage backends ─────────────────────────────────────────────────
+// "file": local JSON (dev, single process). "supabase": the whole workspace as one JSONB row,
+// written with an optimistic revision check so concurrent serverless instances cannot clobber
+// each other. The relational schema in 0001_init.sql remains the production target.
+
+interface Loaded {
+  store: Store | null;
+  rev: number;
+}
+
+interface Backend {
+  load(): Promise<Loaded>;
+  /** Returns false when someone else wrote first (revision mismatch). */
+  save(s: Store, rev: number): Promise<boolean>;
+}
+
+const fileBackend: Backend = {
+  async load() {
+    try {
+      return { store: JSON.parse(await fs.readFile(FILE, "utf8")) as Store, rev: 0 };
+    } catch {
+      return { store: null, rev: 0 }; // first run or unreadable
+    }
+  },
+  async save(s) {
+    await fs.mkdir(DIR, { recursive: true });
+    await fs.writeFile(FILE, JSON.stringify(s, null, 2));
+    return true;
+  },
+};
+
+const SB_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const WORKSPACE = process.env.PROPVID_WORKSPACE || "default";
+
+function sb(path: string, init: RequestInit = {}) {
+  return fetch(`${SB_URL.replace(/\/$/, "")}/rest/v1/${path}`, {
+    ...init,
+    cache: "no-store",
+    // A fresh signal opts out of Next's per-render GET memoization; otherwise a re-read after a
+    // write conflict would return the stale first response.
+    signal: new AbortController().signal,
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json", Prefer: "return=representation", ...init.headers },
+  });
+}
+
+const supabaseBackend: Backend = {
+  async load() {
+    const res = await sb(`workspace_store?id=eq.${encodeURIComponent(WORKSPACE)}&select=data,rev`);
+    if (!res.ok) throw new Error(`Supabase load failed: ${res.status} ${await res.text()}`);
+    const rows = (await res.json()) as { data: Store; rev: number }[];
+    return rows[0] ? { store: rows[0].data, rev: rows[0].rev } : { store: null, rev: 0 };
+  },
+  async save(s, rev) {
+    const body = JSON.stringify({ id: WORKSPACE, data: s, rev: rev + 1, updated_at: new Date().toISOString() });
+    const res =
+      rev === 0
+        ? await sb("workspace_store", { method: "POST", body })
+        : await sb(`workspace_store?id=eq.${encodeURIComponent(WORKSPACE)}&rev=eq.${rev}`, { method: "PATCH", body });
+    if (res.status === 409) return false; // row created by another instance
+    if (!res.ok) throw new Error(`Supabase save failed: ${res.status} ${await res.text()}`);
+    return ((await res.json()) as unknown[]).length > 0;
+  },
+};
+
+export type StorageMode = "supabase" | "file" | "ephemeral";
+
+/** "ephemeral" = hosted (Vercel) without Supabase: data lives in /tmp and is lost between instances. */
+export function storageMode(): StorageMode {
+  if (SB_URL && SB_KEY) return "supabase";
+  return process.env.VERCEL ? "ephemeral" : "file";
+}
+
+const backend: Backend = storageMode() === "supabase" ? supabaseBackend : fileBackend;
+
+async function loadOrSeed(): Promise<Loaded & { store: Store }> {
+  const loaded = await backend.load();
+  if (loaded.store && loaded.store.version === STORE_VERSION) return { store: loaded.store, rev: loaded.rev };
   const s = seed();
-  await write(s);
-  return s;
+  if (await backend.save(s, loaded.rev)) return { store: s, rev: loaded.rev + 1 };
+  const again = await backend.load(); // another instance seeded first
+  if (!again.store) throw new Error("Workspace could not be initialised.");
+  return { store: again.store, rev: again.rev };
 }
 
-async function write(s: Store) {
-  await fs.mkdir(DIR, { recursive: true });
-  await fs.writeFile(FILE, JSON.stringify(s, null, 2));
+export async function readStore(): Promise<Store> {
+  return (await loadOrSeed()).store;
 }
 
-/** Serialised read-modify-write. */
+/** Serialised read-modify-write; retried on a concurrent write in Supabase mode. */
 export function mutate<T>(fn: (s: Store) => T | Promise<T>): Promise<T> {
   const run = queue.then(async () => {
-    const s = await readStore();
-    const result = await fn(s);
-    await write(s);
-    return result;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const { store, rev } = await loadOrSeed();
+      const result = await fn(store);
+      if (await backend.save(store, rev)) return result;
+    }
+    throw new Error("The workspace is busy — please try again.");
   });
   queue = run.catch(() => undefined);
   return run;

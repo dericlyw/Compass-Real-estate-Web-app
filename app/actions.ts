@@ -8,7 +8,8 @@ import { entry, mutate, recheck, resetStore } from "@/lib/data/store";
 import { angles } from "@/lib/data/urban-forest";
 import { isBlocked } from "@/lib/engine/compliance";
 import { draftReply, scoreLead } from "@/lib/engine/leads";
-import type { AdSpend, Appointment, Lang, Lead, LeadStage, Platform } from "@/lib/types";
+import type { AdSpend, Appointment, FeedbackKind, Lang, Lead, LeadStage, Platform } from "@/lib/types";
+import { FEEDBACK_LABEL } from "@/lib/types";
 
 async function actor(): Promise<string> {
   return (await cookies()).get("pv_user")?.value || "Operator";
@@ -111,6 +112,31 @@ export async function aiRewrite(fd: FormData): Promise<void> {
   });
   refreshAll();
   redirect(`/approvals/${id}${error ? `?error=${encodeURIComponent(error)}` : ""}`);
+}
+
+// ── Tester feedback ──────────────────────────────────────────────
+
+export async function submitFeedback(fd: FormData) {
+  const who = await actor();
+  const kind = str(fd, "kind") as FeedbackKind;
+  const note = str(fd, "note").slice(0, 2000);
+  const page = str(fd, "page").slice(0, 200) || "/";
+  if (!note) redirect(`/feedback?from=${encodeURIComponent(page)}&error=1`);
+  const rating = Number(str(fd, "rating"));
+  await mutate((s) => {
+    (s.feedback ??= []).unshift({
+      id: crypto.randomUUID(),
+      at: new Date().toISOString(),
+      who,
+      page,
+      kind: kind in FEEDBACK_LABEL ? kind : "idea",
+      rating: rating >= 1 && rating <= 5 ? rating : null,
+      note,
+    });
+    s.audit.push(entry(who, "feedback", page, note.slice(0, 80)));
+  });
+  refreshAll();
+  redirect(`/feedback?thanks=1&from=${encodeURIComponent(page)}`);
 }
 
 // ── Settings ─────────────────────────────────────────────────────
