@@ -1,18 +1,17 @@
 import "server-only";
-// Local demo store (JSON file in .data/). Production target is Supabase — the schema is in
-// supabase/migrations/0001_init.sql and mirrors these shapes one-to-one.
+// Workspace store. One document per pilot workspace, persisted by lib/data/backend.ts
+// (local file in development, Supabase `app_state` row when hosted). The relational schema in
+// supabase/migrations/0001_init.sql is the post-pilot target and mirrors these shapes.
 
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import { ARTIST_IMPRESSION } from "@/lib/data/copy-library";
 import { claims, project as seedProject } from "@/lib/data/urban-forest";
 import { checkAsset, isBlocked } from "@/lib/engine/compliance";
 import { buildAssets, endCard } from "@/lib/engine/generate";
+import { backend } from "@/lib/data/backend";
 import type { AuditEntry, CreativeAsset, Slot, Store } from "@/lib/types";
 
-const DIR = process.env.PROPVID_DATA_DIR ?? path.join(process.cwd(), ".data");
-const FILE = path.join(DIR, "store.json");
-const STORE_VERSION = 1;
+const STORE_VERSION = 2;
+export const DEFAULT_NEGOTIATORS = ["Negotiator 1", "Negotiator 2"];
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -32,7 +31,7 @@ export function recheck(store: Store, a: CreativeAsset): void {
   }
 }
 
-function seedSlots(): Slot[] {
+export function seedSlots(negotiators: string[] = DEFAULT_NEGOTIATORS): Slot[] {
   // Sales-gallery hours in Malaysia time (UTC+8): weekends 11am/2pm/4pm, weekdays 7pm.
   const slots: Slot[] = [];
   const nowMyt = new Date(Date.now() + 8 * 3600000);
@@ -41,10 +40,10 @@ function seedSlots(): Slot[] {
     const dow = new Date(Date.UTC(y, m, day)).getUTCDay();
     const hours = dow === 0 || dow === 6 ? [11, 14, 16] : [19];
     for (const h of hours) {
-      for (const negotiator of ["Negotiator 1", "Negotiator 2"]) {
+      negotiators.forEach((negotiator, n) => {
         const t = new Date(Date.UTC(y, m, day, h - 8));
-        slots.push({ id: `slot_${t.getTime()}_${negotiator.slice(-1)}`, negotiator, start: t.toISOString() });
-      }
+        slots.push({ id: `slot_${t.getTime()}_${n}`, negotiator, start: t.toISOString() });
+      });
     }
   }
   return slots;
@@ -53,6 +52,8 @@ function seedSlots(): Slot[] {
 export function seed(): Store {
   const store: Store = {
     version: STORE_VERSION,
+    negotiators: [...DEFAULT_NEGOTIATORS],
+    feedback: [],
     project: structuredClone(seedProject),
     assets: buildAssets(seedProject),
     leads: [],
@@ -70,30 +71,37 @@ export function entry(actor: string, action: string, target: string, detail?: st
   return { id: crypto.randomUUID(), at: new Date().toISOString(), actor, action, target, detail };
 }
 
-export async function readStore(): Promise<Store> {
-  try {
-    const s = JSON.parse(await fs.readFile(FILE, "utf8")) as Store;
-    if (s.version === STORE_VERSION) return s;
-  } catch {
-    // first run or unreadable — fall through to seed
+/** Upgrades older documents in place so pilot data survives releases. */
+function migrate(s: Store): Store {
+  if (s.version === 1) {
+    s.negotiators ??= [...DEFAULT_NEGOTIATORS];
+    s.feedback ??= [];
+    s.version = 2;
   }
-  const s = seed();
-  await write(s);
   return s;
 }
 
-async function write(s: Store) {
-  await fs.mkdir(DIR, { recursive: true });
-  await fs.writeFile(FILE, JSON.stringify(s, null, 2));
+async function load(): Promise<{ store: Store; rev: number | null }> {
+  const got = await backend().load();
+  if (got && got.store.version <= STORE_VERSION) return { store: migrate(got.store), rev: got.rev };
+  return { store: seed(), rev: got ? got.rev : null };
 }
 
-/** Serialised read-modify-write. */
+export async function readStore(): Promise<Store> {
+  const { store, rev } = await load();
+  if (rev === null) await backend().save(store, null); // first run: persist the generated campaign
+  return store;
+}
+
+/** Serialised read-modify-write with optimistic retry across server instances. */
 export function mutate<T>(fn: (s: Store) => T | Promise<T>): Promise<T> {
   const run = queue.then(async () => {
-    const s = await readStore();
-    const result = await fn(s);
-    await write(s);
-    return result;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const { store, rev } = await load();
+      const result = await fn(store);
+      if (await backend().save(store, rev)) return result;
+    }
+    throw new Error("Could not save: too many concurrent edits. Please retry.");
   });
   queue = run.catch(() => undefined);
   return run;

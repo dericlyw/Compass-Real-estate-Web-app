@@ -50,6 +50,11 @@ export default async function Landing({ params, searchParams }: { params: Promis
 
   return (
     <div className="min-h-screen bg-ink">
+      {process.env.NEXT_PUBLIC_TEST_MODE !== "off" ? (
+        <div className="bg-warn px-4 py-1.5 text-center text-xs font-medium text-ink">
+          {{ en: "TEST VERSION — please use dummy details", bm: "VERSI UJIAN — sila guna butiran palsu", zh: "测试版本——请使用虚拟资料" }[lang]}
+        </div>
+      ) : null}
       <div className="relative">
         <div
           role="img"

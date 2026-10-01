@@ -13,6 +13,7 @@ const LINKS = [
   ["/appointments", "Appointments"],
   ["/report", "Leadership Report"],
   ["/audit", "Audit Log"],
+  ["/feedback", "Tester Feedback"],
   ["/settings", "Settings"],
 ] as const;
 

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { Nav } from "@/components/Nav";
 import { readStore } from "@/lib/data/store";
 
@@ -6,9 +8,11 @@ export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const s = await readStore();
+  const tester = (await cookies()).get("pv_user")?.value;
   const counts = {
     "/approvals": s.assets.filter((a) => a.status === "needs_review").length,
     "/leads": s.leads.filter((l) => l.stage === "new").length,
+    "/feedback": s.feedback.filter((f) => f.status === "open").length,
   };
   return (
     <div className="mx-auto flex min-h-screen max-w-[1440px] flex-col md:flex-row">
@@ -25,8 +29,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <p className="text-xs text-bone-dim">{s.project.developer}</p>
         </div>
         <Nav counts={counts} />
+        <div className="mt-6 hidden text-[11px] text-bone-dim md:block">
+          <span className="rounded border border-warn/50 px-1.5 py-0.5 text-warn">PILOT TEST</span>
+          <p className="mt-2">Signed in as <Link href="/login" className="text-bone underline">{tester ?? "guest"}</Link></p>
+        </div>
       </aside>
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-10">{children}</main>
+      <main className="min-w-0 flex-1 px-4 py-8 pb-24 md:px-10">{children}</main>
+      <FeedbackWidget />
     </div>
   );
 }

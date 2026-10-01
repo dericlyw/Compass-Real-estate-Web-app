@@ -4,7 +4,7 @@ import "server-only";
 
 import Anthropic from "@anthropic-ai/sdk";
 import { angles, claims, personas } from "@/lib/data/urban-forest";
-import type { CopyVariant, CreativeAsset } from "@/lib/types";
+import type { CopyVariant, CreativeAsset, Project } from "@/lib/types";
 import { FORMAT_SPEC, LANG_LABEL } from "@/lib/types";
 
 export const MODEL = "claude-opus-5";
@@ -13,7 +13,7 @@ export const PROMPT_VERSION = "copywriter-v1";
 const SYSTEM = `You are a senior Malaysian property copywriter writing platform-native social ads.
 Every asset exists to create a booked sales-gallery visit.
 Hard rules:
-- Use ONLY facts in the provided claims list. Never invent prices, unit counts, sizes, dates, returns or permit numbers.
+- Use ONLY facts in the provided claims list and price list. Never invent prices, unit counts, sizes, dates, returns or permit numbers. A price may only appear exactly as given in the price list, as "from RM…".
 - Never mention investment returns, yields, percentages or guarantees.
 - Do not name the locality (Bercham/Tambun is unconfirmed); say "Ipoh".
 - No superlatives such as "world-class" or "best".
@@ -37,7 +37,7 @@ export function aiEnabled(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
 }
 
-export async function rewriteVariant(asset: CreativeAsset, current: CopyVariant, instruction: string): Promise<CopyVariant> {
+export async function rewriteVariant(asset: CreativeAsset, current: CopyVariant, instruction: string, priceList: Project["priceList"] = []): Promise<CopyVariant> {
   const angle = angles.find((a) => a.id === asset.angleId)!;
   const persona = personas.find((p) => p.id === asset.personaId)!;
   const usable = claims.filter((c) => c.status !== "high_risk" && c.id !== "c-ipoh-city-day" && c.id !== "c-tenant-secured" && c.id !== "c-brands");
@@ -64,6 +64,7 @@ export async function rewriteVariant(asset: CreativeAsset, current: CopyVariant,
           angle: { name: angle.name, promise: angle.promise },
           persona,
           claims: usable.map((c) => ({ id: c.id, statement: c.statement, status: c.status })),
+          price_list: priceList,
           current,
         }),
       },

@@ -71,3 +71,10 @@ test("naming an unconfirmed locality warns", () => {
   const r = checkAsset(asset("New in Tambun"), ctx());
   assert.ok(r.some((x) => x.rule === "R7 locality" && x.level === "warn"));
 });
+
+test("sizes and prices from the loaded price list are allowed; others are not", () => {
+  const withList = { ...base, priceList: [{ unitType: "Type A", component: "The Miner", sizeSqft: "650", priceFromRM: 388000 }] };
+  assert.ok(!isBlocked(checkAsset(asset("650 sq ft from RM388000"), ctx(withList))));
+  assert.ok(isBlocked(checkAsset(asset("700 sq ft from RM388000"), ctx(withList))));
+  assert.ok(isBlocked(checkAsset(asset("650 sq ft from RM350000"), ctx(withList))));
+});

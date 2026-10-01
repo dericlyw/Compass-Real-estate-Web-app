@@ -38,6 +38,13 @@ worker/                    Python + ffmpeg + PySceneDetect + faster-whisper (con
 
 Storage: the app runs out of the box on a local JSON store (`.data/store.json`). The Supabase schema mirrors the same shapes; wiring the repository layer to Supabase is the first task of the next phase.
 
+## Pilot-test release (added)
+- Storage that survives hosting: Supabase `app_state` document with optimistic revision checks (`lib/data/backend.ts`, migration `0002`); local file fallback.
+- Access: shared passcode + tester name (`middleware.ts`, `/login`); landing pages public with a TEST banner.
+- Inputs TKB can enter directly: price list (feeds the compliance gate and AI copy) and sales roster (rebuilds open slots).
+- Feedback: button on every page → **Tester Feedback** list + CSV export.
+- Guides: `MVP_TEST_GUIDE.md`, `DEPLOY.md`.
+
 ## Next tasks (ordered)
 
 1. Receive blocking inputs from TKB (see `MISSING_INPUTS.md`).

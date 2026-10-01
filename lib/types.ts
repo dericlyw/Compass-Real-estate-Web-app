@@ -207,8 +207,22 @@ export interface AuditEntry {
   detail?: string;
 }
 
+export type FeedbackKind = "bug" | "idea" | "praise" | "question";
+
+export interface Feedback {
+  id: string;
+  at: string;
+  actor: string;
+  page: string;
+  kind: FeedbackKind;
+  text: string;
+  status: "open" | "done";
+}
+
 export interface Store {
   version: number;
+  negotiators: string[];
+  feedback: Feedback[];
   project: Project;
   assets: CreativeAsset[];
   leads: Lead[];

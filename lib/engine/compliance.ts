@@ -32,8 +32,9 @@ function numbersIn(text: string): string[] {
   return withoutPrices.match(/\d+(?:[.,]\d+)?/g) ?? [];
 }
 
-function allowedNumbers(claims: Claim[]): Set<string> {
+function allowedNumbers(claims: Claim[], project: Project): Set<string> {
   const s = new Set<string>();
+  for (const row of project.priceList) for (const n of row.sizeSqft.match(/\d+(?:[.,]\d+)?/g) ?? []) s.add(n);
   for (const c of claims) {
     if (c.status === "high_risk") continue;
     for (const n of c.statement.match(/\d+(?:[.,]\d+)?/g) ?? []) s.add(n);
@@ -77,7 +78,7 @@ export function checkAsset(asset: CreativeAsset, ctx: ComplianceContext): Compli
   }
 
   const texts = asset.variants.map((v) => ({ key: v.key, text: variantText(v) }));
-  const allowed = allowedNumbers(claims);
+  const allowed = allowedNumbers(claims, project);
   const priceSet = new Set(project.priceList.map((x) => String(x.priceFromRM)));
 
   for (const { key, text } of texts) {

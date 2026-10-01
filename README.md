@@ -24,6 +24,8 @@ Then open **Settings** and enter the developer licence and APDL numbers — unti
 
 Optional: `ANTHROPIC_API_KEY` enables AI rewrites. See `.env.example`.
 
+**Hosted pilot test:** see `docs/DEPLOY.md` (Supabase storage + access code) and `docs/MVP_TEST_GUIDE.md` (tester scripts, feedback questions). Testers leave feedback with the **Feedback** button on every page.
+
 ## Layout
 `app/` pages and server actions · `lib/engine/` compliance, generator, strategy, naming, leads, metrics · `lib/data/` case-study data and copy library · `supabase/migrations/` production schema with RLS · `worker/` ffmpeg/PySceneDetect/Whisper video worker · `docs/` plan, decisions, missing inputs, campaign brief.
 

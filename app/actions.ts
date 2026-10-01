@@ -4,11 +4,11 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { aiEnabled, rewriteVariant } from "@/lib/ai/copywriter";
-import { entry, mutate, recheck, resetStore } from "@/lib/data/store";
+import { DEFAULT_NEGOTIATORS, entry, mutate, readStore, recheck, resetStore, seedSlots } from "@/lib/data/store";
 import { angles } from "@/lib/data/urban-forest";
 import { isBlocked } from "@/lib/engine/compliance";
 import { draftReply, scoreLead } from "@/lib/engine/leads";
-import type { AdSpend, Appointment, Lang, Lead, LeadStage, Platform } from "@/lib/types";
+import type { AdSpend, Appointment, FeedbackKind, Lang, Lead, LeadStage, Platform, Project } from "@/lib/types";
 
 async function actor(): Promise<string> {
   return (await cookies()).get("pv_user")?.value || "Operator";
@@ -91,26 +91,31 @@ export async function editVariant(fd: FormData) {
 export async function aiRewrite(fd: FormData): Promise<void> {
   const id = str(fd, "id");
   const key = str(fd, "key");
-  const instruction = str(fd, "instruction");
+  const instruction = str(fd, "instruction").slice(0, 300);
   if (!aiEnabled()) redirect(`/approvals/${id}?error=${encodeURIComponent("Set ANTHROPIC_API_KEY to enable the AI Copywriter.")}`);
   const who = await actor();
-  let error = "";
-  await mutate(async (s) => {
+  const s0 = await readStore();
+  const a0 = s0.assets.find((x) => x.id === id);
+  const v0 = a0?.variants.find((x) => x.key === key);
+  if (!a0 || !v0) redirect("/approvals");
+  // Call the model once, outside the save loop, so a save retry never re-bills the API.
+  let next;
+  try {
+    next = await rewriteVariant(a0, v0, instruction, s0.project.priceList);
+  } catch (e) {
+    redirect(`/approvals/${id}?error=${encodeURIComponent(e instanceof Error ? e.message : "AI rewrite failed")}`);
+  }
+  await mutate((s) => {
     const a = s.assets.find((x) => x.id === id);
     const idx = a?.variants.findIndex((x) => x.key === key) ?? -1;
     if (!a || idx < 0) return;
-    try {
-      const next = await rewriteVariant(a, a.variants[idx], instruction);
-      a.variants[idx] = next;
-      if (a.status === "approved") a.status = "needs_review";
-      recheck(s, a);
-      s.audit.push(entry(who, "ai_rewrite", `${id}/${key}`, `${next.model} ${next.promptVersion}: ${instruction}`));
-    } catch (e) {
-      error = e instanceof Error ? e.message : "AI rewrite failed";
-    }
+    a.variants[idx] = next;
+    if (a.status === "approved") a.status = "needs_review";
+    recheck(s, a);
+    s.audit.push(entry(who, "ai_rewrite", `${id}/${key}`, `${next.model} ${next.promptVersion}: ${instruction}`));
   });
   refreshAll();
-  redirect(`/approvals/${id}${error ? `?error=${encodeURIComponent(error)}` : ""}`);
+  redirect(`/approvals/${id}`);
 }
 
 // ── Settings ─────────────────────────────────────────────────────
@@ -278,6 +283,84 @@ export async function addSpend(fd: FormData) {
     s.audit.push(entry(who, "spend_logged", row.id, `RM ${row.amountRM} ${row.platform}/${row.angleId}`));
   });
   refreshAll();
+}
+
+// ── Pilot inputs: price list & sales roster ──────────────────────
+
+/** One unit type per line: Component | Unit type | Size (sq ft) | Price from (RM). */
+export async function savePriceList(fd: FormData) {
+  const who = await actor();
+  const rows: Project["priceList"] = [];
+  const bad: string[] = [];
+  for (const line of str(fd, "priceList").split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const [component, unitType, size, price] = line.split("|").map((x) => x.trim());
+    const n = Number((price ?? "").replace(/[^\d.]/g, ""));
+    if (!component || !unitType || !size || !Number.isFinite(n) || n <= 0) bad.push(line.trim());
+    else rows.push({ component, unitType, sizeSqft: size.replace(/[^\d.,-]/g, ""), priceFromRM: Math.round(n) });
+  }
+  if (bad.length) redirect(`/settings?error=${encodeURIComponent(`Could not read: ${bad.slice(0, 3).join(" / ")}`)}`);
+  await mutate((s) => {
+    s.project.priceList = rows;
+    for (const a of s.assets) recheck(s, a);
+    s.audit.push(entry(who, "update_price_list", s.project.id, `${rows.length} unit types`));
+  });
+  refreshAll();
+  redirect("/settings?saved=price");
+}
+
+export async function saveRoster(fd: FormData) {
+  const who = await actor();
+  const names = [...new Set(str(fd, "roster").split(/\r?\n/).map((x) => x.trim().slice(0, 40)).filter(Boolean))].slice(0, 12);
+  await mutate((s) => {
+    s.negotiators = names.length ? names : [...DEFAULT_NEGOTIATORS];
+    // Keep booked slots; regenerate open future slots for the new roster.
+    const booked = s.slots.filter((x) => x.leadId);
+    const taken = new Set(booked.map((x) => `${x.start}|${x.negotiator}`));
+    s.slots = [...booked, ...seedSlots(s.negotiators).filter((x) => !taken.has(`${x.start}|${x.negotiator}`))];
+    s.audit.push(entry(who, "update_roster", s.project.id, s.negotiators.join(", ")));
+  });
+  refreshAll();
+  redirect("/settings?saved=roster");
+}
+
+// ── Tester feedback ──────────────────────────────────────────────
+
+export async function submitFeedback(fd: FormData) {
+  const who = await actor();
+  const text = str(fd, "text").slice(0, 2000);
+  const kind = (["bug", "idea", "praise", "question"].includes(str(fd, "kind")) ? str(fd, "kind") : "idea") as FeedbackKind;
+  const page = str(fd, "page").slice(0, 200) || "/";
+  if (!text) return;
+  await mutate((s) => {
+    s.feedback.unshift({ id: crypto.randomUUID(), at: new Date().toISOString(), actor: who, page, kind, text, status: "open" });
+  });
+  revalidatePath("/feedback");
+}
+
+export async function toggleFeedback(fd: FormData) {
+  const id = str(fd, "id");
+  await mutate((s) => {
+    const f = s.feedback.find((x) => x.id === id);
+    if (f) f.status = f.status === "open" ? "done" : "open";
+  });
+  revalidatePath("/feedback");
+}
+
+// ── Pilot access ─────────────────────────────────────────────────
+
+export async function signIn(fd: FormData) {
+  const { accessToken } = await import("@/lib/access");
+  const code = str(fd, "code");
+  const name = str(fd, "name").slice(0, 40);
+  const next = str(fd, "next").startsWith("/") ? str(fd, "next") : "/";
+  const expected = process.env.ACCESS_CODE;
+  if (expected && code !== expected) redirect(`/login?error=1&next=${encodeURIComponent(next)}`);
+  const jar = await cookies();
+  const opts = { httpOnly: true, sameSite: "lax" as const, secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 60 * 24 * 30 };
+  if (expected) jar.set("pv_access", await accessToken(expected), opts);
+  if (name) jar.set("pv_user", name, opts);
+  redirect(next);
 }
 
 // ── Demo data (clearly labelled; never mixed into real reporting silently) ──

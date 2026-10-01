@@ -58,12 +58,12 @@ export default async function Appointments() {
       <Section title="Slot availability (next 7 days with slots)">
         <div className="card overflow-x-auto">
           <table className="table">
-            <thead><tr><th>Date</th><th>Negotiator 1</th><th>Negotiator 2</th></tr></thead>
+            <thead><tr><th>Date</th>{s.negotiators.map((n) => <th key={n}>{n}</th>)}</tr></thead>
             <tbody>
               {days.map((d) => (
                 <tr key={d}>
                   <td className="whitespace-nowrap text-bone">{new Date(d + "T00:00:00").toLocaleDateString("en-MY", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" })}</td>
-                  {["Negotiator 1", "Negotiator 2"].map((n) => (
+                  {s.negotiators.map((n) => (
                     <td key={n} className="text-xs">
                       {s.slots.filter((x) => x.start.slice(0, 10) === d && x.negotiator === n).map((x) => (
                         <span key={x.id} className={`mr-2 ${x.leadId ? "text-gold" : "text-bone-dim"}`}>{new Date(x.start).toLocaleTimeString("en-MY", { timeZone: "Asia/Kuala_Lumpur", hour: "numeric" })}{x.leadId ? " ●" : ""}</span>
@@ -74,7 +74,7 @@ export default async function Appointments() {
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-[11px] text-bone-dim">Negotiator names are placeholders until TKB provides the sales roster.</p>
+          <p className="mt-2 text-[11px] text-bone-dim">Edit the sales roster in Settings.</p>
         </div>
       </Section>
     </>
