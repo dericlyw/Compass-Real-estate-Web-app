@@ -37,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         ) : null}
         {storageMode() === "ephemeral" ? (
           <p className="no-print mb-6 rounded-md border border-bad/40 bg-bad/5 px-3 py-2 text-xs text-bad">
-            Storage is temporary on this host (no Supabase configured) — work may disappear. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+            Storage is temporary on this host (no Supabase configured) — work may disappear. Set SUPABASE_URL, SUPABASE_KEY and PROPVID_DB_TOKEN.
           </p>
         ) : null}
         {children}

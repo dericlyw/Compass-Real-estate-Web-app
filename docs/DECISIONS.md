@@ -41,7 +41,7 @@ Build started on "proceed" without answers to PRD §12, so the PRD's recommendat
 
 | # | Decision | Why | Revisit when |
 |---|---|---|---|
-| D26 | Hosted storage = one JSONB row per workspace in Supabase (`0002_workspace_store.sql`), written with an optimistic `rev` check and retried on conflict. | Smallest change that survives serverless instances; keeps `lib/data/store.ts` as the only data seam. Relational schema `0001` stays the production target. | Pilot goes live / more than a handful of concurrent users. |
+| D26 | Hosted storage = one JSONB row per workspace in Supabase (`0002_workspace_store.sql`), written with an optimistic `rev` check and retried on conflict. Tables are closed to the API; access only via SECURITY DEFINER functions that check a secret token, so a publishable key suffices and it can share an existing project (`propvid_` prefix). Test round uses the existing "Chat demo" project (free plan's 2-project limit reached). | Smallest change that survives serverless instances; keeps `lib/data/store.ts` as the only data seam. Relational schema `0001` stays the production target. | Pilot goes live / more than a handful of concurrent users. |
 | D27 | Supabase reads opt out of Next's per-render fetch memoization. | Found in testing: a re-read after a write conflict returned the stale first response. | — |
 | D28 | Test gate = one shared access code (`PROPVID_ACCESS_CODE`), hashed cookie, everything gated including landing pages, `noindex`. | Unreleased TKB project material; no per-user accounts needed for a feedback round. | Real users / client portal (P1). |
 | D29 | Feedback is stored in the workspace and exported as CSV; it survives a workspace reset. | Testers stay in the app; Deric gets one sheet to triage. | — |

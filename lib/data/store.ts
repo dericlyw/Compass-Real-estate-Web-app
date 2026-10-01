@@ -110,37 +110,32 @@ const fileBackend: Backend = {
   },
 };
 
+// Access goes only through the token-checked functions in 0002_workspace_store.sql, so a
+// public (publishable/anon) key is enough and the tables stay closed to the API.
 const SB_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const SB_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const DB_TOKEN = process.env.PROPVID_DB_TOKEN || "";
 const WORKSPACE = process.env.PROPVID_WORKSPACE || "default";
 
-function sb(path: string, init: RequestInit = {}) {
-  return fetch(`${SB_URL.replace(/\/$/, "")}/rest/v1/${path}`, {
-    ...init,
+async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${SB_URL.replace(/\/$/, "")}/rest/v1/rpc/${fn}`, {
+    method: "POST",
     cache: "no-store",
-    // A fresh signal opts out of Next's per-render GET memoization; otherwise a re-read after a
-    // write conflict would return the stale first response.
-    signal: new AbortController().signal,
-    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json", Prefer: "return=representation", ...init.headers },
+    signal: new AbortController().signal, // never memoised across a render
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ p_id: WORKSPACE, p_token: DB_TOKEN, ...args }),
   });
+  if (!res.ok) throw new Error(`Storage ${fn} failed: ${res.status} ${(await res.text()).slice(0, 200)}`);
+  return (await res.json()) as T;
 }
 
 const supabaseBackend: Backend = {
   async load() {
-    const res = await sb(`workspace_store?id=eq.${encodeURIComponent(WORKSPACE)}&select=data,rev`);
-    if (!res.ok) throw new Error(`Supabase load failed: ${res.status} ${await res.text()}`);
-    const rows = (await res.json()) as { data: Store; rev: number }[];
+    const rows = await rpc<{ data: Store; rev: number }[]>("propvid_load", {});
     return rows[0] ? { store: rows[0].data, rev: rows[0].rev } : { store: null, rev: 0 };
   },
   async save(s, rev) {
-    const body = JSON.stringify({ id: WORKSPACE, data: s, rev: rev + 1, updated_at: new Date().toISOString() });
-    const res =
-      rev === 0
-        ? await sb("workspace_store", { method: "POST", body })
-        : await sb(`workspace_store?id=eq.${encodeURIComponent(WORKSPACE)}&rev=eq.${rev}`, { method: "PATCH", body });
-    if (res.status === 409) return false; // row created by another instance
-    if (!res.ok) throw new Error(`Supabase save failed: ${res.status} ${await res.text()}`);
-    return ((await res.json()) as unknown[]).length > 0;
+    return rpc<boolean>("propvid_save", { p_data: s, p_rev: rev });
   },
 };
 
@@ -148,7 +143,7 @@ export type StorageMode = "supabase" | "file" | "ephemeral";
 
 /** "ephemeral" = hosted (Vercel) without Supabase: data lives in /tmp and is lost between instances. */
 export function storageMode(): StorageMode {
-  if (SB_URL && SB_KEY) return "supabase";
+  if (SB_URL && SB_KEY && DB_TOKEN) return "supabase";
   return process.env.VERCEL ? "ephemeral" : "file";
 }
 

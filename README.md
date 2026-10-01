@@ -15,7 +15,14 @@ Turn one property concept film into an approval-ready, trilingual social campaig
 - **Content Engine** (`/engine`) — weekly Angle → Draft → Polish → Repeat loop for organic posts: specificity-checked angles, Claude or copy-and-paste drafts, a generic-phrase linter (EN/BM/中文) and a Polish gate, next-week slot scheduling with a `.ics` invite, and hand-off into the approval queue and launch kit with `organic_social` UTMs. See `docs/PRD_CONTENT_ENGINE.md`.
 - **Lead inbox → appointments → report** — scoring, 2-minute SLA with drafted first reply, slot booking with reminders, pre-visit brief, outcome logging, leadership one-pager.
 
-## Run
+## Run on your own computer (easiest)
+1. Install **Node.js LTS (22+)** from https://nodejs.org.
+2. Unzip the project and double-click **`start-local.bat`** (Windows) or **`start-local.command`** (Mac; first time right-click → Open).
+3. The browser opens http://localhost:3000/engine. First start installs packages (1–2 min). Close the window to stop.
+
+Your data is saved in the `.data` folder next to the app. Delete it to start fresh.
+
+## Run (developers)
 ```bash
 npm install
 npm run dev        # http://localhost:3000
@@ -26,8 +33,8 @@ Then open **Settings** and enter the developer licence and APDL numbers — unti
 Optional: `ANTHROPIC_API_KEY` enables AI rewrites. See `.env.example`.
 
 ## Hosted test (Vercel + Supabase)
-1. Supabase: run `supabase/migrations/0002_workspace_store.sql` in the SQL editor.
-2. Vercel: import this repo; set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PROPVID_ACCESS_CODE`, `NEXT_PUBLIC_SITE_URL` and optionally `ANTHROPIC_API_KEY`.
+1. Supabase: run `supabase/migrations/0002_workspace_store.sql`, then `insert into propvid_secret (token_hash) values (encode(sha256('<your PROPVID_DB_TOKEN>'::bytea), 'hex'));`.
+2. Vercel: import this repo; set `SUPABASE_URL`, `SUPABASE_KEY` (publishable key is enough), `PROPVID_DB_TOKEN`, `PROPVID_ACCESS_CODE`, `NEXT_PUBLIC_SITE_URL` and optionally `ANTHROPIC_API_KEY`.
 3. Share the link, the access code and `docs/TEST_GUIDE.md` with testers. Their notes collect under **Feedback received** (CSV export).
 
 Without Supabase on a host the app warns that storage is temporary.
