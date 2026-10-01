@@ -87,12 +87,13 @@ export interface Angle {
   claimIds: string[];
 }
 
-export type AssetFormat = "reel15" | "feed30" | "carousel" | "story";
+export type AssetFormat = "reel15" | "feed30" | "carousel" | "story" | "post";
 export const FORMAT_SPEC: Record<AssetFormat, { label: string; aspect: string; duration: string; code: string }> = {
   reel15: { label: "Reel / TikTok 15s", aspect: "9:16", duration: "15s", code: "r15" },
   feed30: { label: "Feed video 30s", aspect: "1:1", duration: "30s", code: "f30" },
   carousel: { label: "Carousel (5 cards)", aspect: "4:5", duration: "static", code: "car" },
   story: { label: "Story static", aspect: "9:16", duration: "static", code: "sty" },
+  post: { label: "Single-image post", aspect: "4:5", duration: "static", code: "pst" },
 };
 
 export interface CopyVariant {
@@ -130,6 +131,8 @@ export interface CreativeAsset {
   compliance: ComplianceResult[];
   complianceRunAt?: string;
   reviewerComment?: string;
+  /** Set when the asset came from the weekly Content Engine. `angleId` then holds the parent launch angle (landing page). */
+  engine?: { pieceId: string; angleId: string; angleCode: string; angle: string; scheduledFor?: string; signatureDetail: string };
 }
 
 export interface LandingPage {
@@ -207,6 +210,103 @@ export interface AuditEntry {
   detail?: string;
 }
 
+// ── Content Engine (Angle → Draft → Polish → Repeat). See docs/PRD_CONTENT_ENGINE.md ──
+
+export type EngineJob = "strategy" | "copy" | "editing" | "consistency";
+export const ENGINE_JOB_LABEL: Record<EngineJob, string> = {
+  strategy: "Strategy (what to say)",
+  copy: "Copy (writing it)",
+  editing: "Editing (making it sound right)",
+  consistency: "Consistency (every week)",
+};
+
+export interface VoiceProfile {
+  business: string;
+  audience: string;
+  tone: string[]; // 3–5 words
+  offerLine: string;
+  avoid: string[]; // extra phrases the linter blocks
+  signatureDetails: string[]; // real names, moments, facts only we know
+  baseline: { hoursPerMonth: number | null; spendRM: number | null; weakestJob: EngineJob | null; slowestJob: EngineJob | null };
+  session: { weekday: number; time: string; target: number }; // weekday 0=Sun … 6=Sat, MYT
+}
+
+export interface SpecificityResult {
+  ok: boolean;
+  reasons: string[];
+}
+
+export type EngineAngleStatus = "proposed" | "chosen" | "used" | "rejected";
+
+export interface EngineAngle {
+  id: string;
+  code: string;
+  sentence: string;
+  problems: string[];
+  personaId: string;
+  parentAngleId: string; // one of the four launch angles — decides the landing page
+  claimIds: string[];
+  rationale: string;
+  specificity: SpecificityResult;
+  status: EngineAngleStatus;
+  createdAt: string;
+  weekOf: string; // YYYY-MM-DD, Monday (MYT)
+  model?: string;
+}
+
+export interface LintFinding {
+  id: string;
+  field: "hook" | "primary" | "headline" | "cta";
+  phrase: string;
+  reason: string;
+  severity: "block" | "warn";
+  suggestion?: string;
+  overrideReason?: string;
+}
+
+export type PieceStatus = "draft" | "polished" | "submitted";
+
+export interface PieceCopy {
+  hook: string;
+  primary: string;
+  headline: string;
+  cta: string;
+}
+
+export interface ContentPiece {
+  id: string;
+  angleId: string; // EngineAngle.id
+  lang: Lang;
+  platform: Platform;
+  format: "post" | "carousel";
+  draft: PieceCopy | null; // as first generated / pasted
+  copy: PieceCopy; // current, after Polish edits
+  claimIds: string[];
+  findings: LintFinding[];
+  signatureDetail: string;
+  readConfirmedAt?: string;
+  status: PieceStatus;
+  timings: { createdAt: string; draftedAt?: string; polishedAt?: string; submittedAt?: string };
+  model?: string;
+  promptVersion: string;
+  assetId?: string;
+  scheduledFor?: string;
+}
+
+export interface EngineSession {
+  id: string;
+  weekOf: string;
+  startedAt: string;
+  pieceIds: string[];
+}
+
+export interface EngineState {
+  profile: VoiceProfile;
+  angles: EngineAngle[];
+  pieces: ContentPiece[];
+  sessions: EngineSession[];
+}
+
 export interface Store {
   version: number;
   project: Project;
@@ -216,4 +316,21 @@ export interface Store {
   appointments: Appointment[];
   spend: AdSpend[];
   audit: AuditEntry[];
+  /** Added by the Content Engine; created lazily so existing stores keep their data. */
+  engine?: EngineState;
+  /** Tester feedback collected in the app (/feedback). */
+  feedback?: FeedbackEntry[];
+}
+
+export type FeedbackKind = "bug" | "confusing" | "idea" | "good";
+export const FEEDBACK_LABEL: Record<FeedbackKind, string> = { bug: "Something broke", confusing: "Confusing", idea: "Idea / missing", good: "Works well" };
+
+export interface FeedbackEntry {
+  id: string;
+  at: string;
+  who: string;
+  page: string;
+  kind: FeedbackKind;
+  rating: number | null; // 1–5: "how useful would this be in your week?"
+  note: string;
 }

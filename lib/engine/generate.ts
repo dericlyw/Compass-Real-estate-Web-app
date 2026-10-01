@@ -14,6 +14,7 @@ const PLATFORMS_BY_FORMAT: Record<AssetFormat, Platform[]> = {
   feed30: ["meta", "youtube"],
   carousel: ["meta"],
   story: ["meta"],
+  post: ["meta"], // Content Engine only; not part of the launch kit build below
 };
 
 export function permitLine(project: Project, lang: Lang): string {

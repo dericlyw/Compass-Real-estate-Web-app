@@ -21,3 +21,27 @@ Defaults chosen without blocking the build (PRD §0.5). Each can be reversed.
 | D15 | DEMO leads/spend are opt-in, badged, and flagged on reports. | Never mix fabricated records into real reporting. | — |
 | D16 | Slots seeded as weekends 11am/2pm/4pm, weekdays 7pm MYT for two placeholder negotiators. | No sales roster supplied. | TKB shares roster and gallery hours. |
 | D17 | Approval gate enforced twice: in the server action and by a Postgres trigger. | The gate must not be bypassable by a UI bug or direct API call. | — |
+
+## Content Engine (docs/PRD_CONTENT_ENGINE.md)
+
+Build started on "proceed" without answers to PRD §12, so the PRD's recommendations were taken as defaults.
+
+| # | Decision | Why | Revisit when |
+|---|---|---|---|
+| D18 | Pilot brand = Urban Forest (PRD Q1). | Claims, personas and the compliance gate already exist. | Compass.RealEstate profile needed (second project). |
+| D19 | Organic posts first; `utm_medium=organic_social` (Q2). | Winning angles move to paid later (FR-22). | 2–4 weeks of engine data. |
+| D20 | Session Monday 09:00 MYT, 3 pieces (Q3). Editable on /engine/profile. | PRD default. | Operator changes it. |
+| D21 | Engine assets reuse the approval queue and gate unchanged; reviewer is whoever approves there (Q4). | One gate, no bypass. | TKB names a reviewer. |
+| D22 | Engine assets store the parent launch angle in `angleId` (landing page) and their own code in `asset.engine`. | Every existing page, the launch kit and lead capture keep working; `naming.ts` no longer throws on unknown angles. | Engine angles get their own landing pages. |
+| D23 | Engine state lives under `store.engine`, created lazily; `STORE_VERSION` unchanged. | Upgrading does not wipe existing leads and approvals. | Supabase migration. |
+| D24 | Polish gate: chosen angle, draft read in full, no open blocking flag (or override with reason), one real detail that appears in the copy, compliance pass. Re-checked on submit. | PRD FR-14; Step 8 "don't skip steps". | Override rate > 30%. |
+| D25 | Claims are auto-linked from numbers in the copy, so R8 warns reviewers about unverified figures such as "128 eateries". | Operator-written angles cite no claims. | Brochure verifies the claims. |
+
+## Test deployment
+
+| # | Decision | Why | Revisit when |
+|---|---|---|---|
+| D26 | Hosted storage = one JSONB row per workspace in Supabase (`0002_workspace_store.sql`), written with an optimistic `rev` check and retried on conflict. | Smallest change that survives serverless instances; keeps `lib/data/store.ts` as the only data seam. Relational schema `0001` stays the production target. | Pilot goes live / more than a handful of concurrent users. |
+| D27 | Supabase reads opt out of Next's per-render fetch memoization. | Found in testing: a re-read after a write conflict returned the stale first response. | — |
+| D28 | Test gate = one shared access code (`PROPVID_ACCESS_CODE`), hashed cookie, everything gated including landing pages, `noindex`. | Unreleased TKB project material; no per-user accounts needed for a feedback round. | Real users / client portal (P1). |
+| D29 | Feedback is stored in the workspace and exported as CSV; it survives a workspace reset. | Testers stay in the app; Deric gets one sheet to triage. | — |

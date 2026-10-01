@@ -24,6 +24,7 @@ function Card({ a }: { a: CreativeAsset }) {
         <span className="text-[11px] uppercase tracking-wider text-bone-dim">{FORMAT_SPEC[a.format].label} · {a.lang.toUpperCase()}</span>
         <Badge tone={c === "block" ? "bad" : c === "warn" ? "warn" : "ok"}>{c === "block" ? `${blocks} block` : c === "warn" ? `${warns} warn` : "pass"}</Badge>
       </div>
+      {a.engine ? <p className="mt-2"><Badge tone="gold">Content Engine</Badge></p> : null}
       <p className="mt-2 line-clamp-2 text-sm text-bone">{a.variants[0].hook}</p>
       <p className="mt-1 text-[11px] text-bone-dim">{a.personaId} · {a.platforms.join(", ")}</p>
     </Link>
