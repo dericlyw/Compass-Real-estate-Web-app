@@ -55,10 +55,10 @@
 | 1 | Fri 13 | Tease | "Your kids' playground shouldn't be a car park." | p5 backlane | Single image + Reel | Comment FOREST |
 | 2 | Sat 14 | Tease | "5 forests. 1 is yours. Which one?" | p3 masterplan, cut per forest | Carousel (6) + poll | Comment your forest |
 | 3 | Sun 15 | Reveal | "Who's at your gate at 11pm?" | p6 guardhouse | Single image | DM FOREST |
-| 4 | Mon 16 | Reveal | "787 families. You get to choose your neighbours." | p2 + p6 | Carousel | Comment FOREST |
+| 4 | Mon 16 | Reveal | "787 families. Neighbours who want what you want." | p2 + p6 | Carousel | Comment FOREST |
 | 5 | Tue 17 | Reveal | "Swim. Serve. Smash. Without starting the car." | p7 clubhouse | Reel (icons animate) | DM FOREST |
 | 6 | Wed 18 | Life | "Screen time or skate time?" | p8 rollerblade track | Reel / TikTok | Comment SKATE or FOREST |
-| 7 | Thu 19 | Life | "We planted trees for a canopy your grandchildren will walk under." | p4 aerial | Single image + Threads | DM FOREST |
+| 7 | Thu 19 | Life | "We're planting a canopy your grandchildren will walk under." | p4 aerial | Single image + Threads | DM FOREST |
 | 8 | Fri 20 | Close | "We'll pick you up in a Hummer. You pick your forest." | Hummer at the gate + show unit | Reel + event post | PM "HUMMER" |
 | 9 | Sat 21 | Close | "Hummer's out on the forest loop right now." | Live Hummer + show unit clips | Stories + post | PM "HUMMER" for Sunday |
 | 10 | Sun 22 | Close | "Last day of Hummer Tour Weekend. Which forest did you pick?" | Recap carousel | Carousel + Story | Show unit open daily: PM "HUMMER" |
@@ -108,7 +108,7 @@ Gated and guarded, with one entry point and a guardhouse at the front, so your f
 👉 **DM FOREST** to see the guardhouse and entry layout.
 
 ### Day 4 (Mon 16 Nov): Reveal, community
-**Hook:** 787 families. And you get to pick your neighbours. 🏡
+**Hook:** 787 families. Neighbours who want what you want. 🏡
 
 A fine address is about the people around you too.
 FORReSsTA is planned for families who want the same things: safe streets, green space, and kids growing up with friends next door.
@@ -144,7 +144,7 @@ No more Saturday traffic to the sports centre.
 👉 **Comment SKATE or FOREST**, and we'll send the layout of the stadium zone.
 
 ### Day 7 (Thu 19 Nov): Life, legacy / freehold
-**Hook:** We planted these trees for a canopy your grandchildren will walk under. 🌳
+**Hook:** We're planting a canopy your grandchildren will walk under. 🌳
 
 FORReSsTA's landscape is designed for the canopy it will grow into over generations.
 And because it's **freehold**, the home is yours to pass on.
