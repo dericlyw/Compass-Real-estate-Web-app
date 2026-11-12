@@ -2,10 +2,10 @@
 
 **Project:** FORReSsTA, Residential Foresta @ Bandar Pengkalan Foresta, Ipoh South (TKB)
 **Agency:** Compass.RealEstate
-**Window:** Fri 13 Nov to Sun 22 Nov 2026. That is two weekends, and the second one is Viewing Weekend.
+**Window:** Fri 13 Nov to Sun 22 Nov 2026. That is two weekends, and the second one is Hummer Tour Weekend.
 **Channels:** FB Page, IG, Threads, TikTok. Scheduled in Buffer as drafts for approval.
 **Persona:** P2, a young professional family upgrading in Ipoh. Secondary: P1, the Bercham upgrader.
-**Single goal:** booked private viewings at the sales gallery.
+**Single goal:** booked private Hummer site tours and show unit viewings.
 
 ---
 
@@ -31,12 +31,19 @@
 | TKB Clubhouse and TKB Stadium: swimming, tennis, badminton, fitness, golf, basketball, rollerblading, jogging track | p7–8 |
 | Ipoh South, Bandar Pengkalan Foresta (松俊花园) | p1–2 |
 
-**Fill in before posting** (these are not in the brochure):
-- `[FROM RM___]`
-- `[APDL / Advertising Permit No.]`
-- `[Expected completion]`
-- `[wa.me link]`
-- `[Gallery address + hours]`
+**Confirmed by Deric (12 Nov 2026):**
+
+| Item | Use in copy |
+|---|---|
+| Price | **From RM5xxk** |
+| Permit | **APDL secured** |
+| Completion | **Expected completion 2028** |
+| Show unit | **Show unit ready for viewing** |
+| Tour | **Private site tour in our Hummer: PM to book** |
+| Hours | **Open daily, 9am–6pm** |
+| Slots | **Book early. Weekend slots are limited.** |
+
+> ⚠️ **Compliance note.** Under the Housing Development Act, a housing advertisement must show the **advertising permit number, its validity period and the approving authority**, not only "APDL secured". "APDL secured" is fine as the line in the post. Add the full permit details to the footer before any paid boost, and ideally before Day 1.
 
 **Never use:** "guaranteed", "#1", "best value", "only X units left" (unless sales confirms it in writing that day), or rental and ROI claims.
 **Every visual is labelled "Artist's impression only."**
@@ -52,16 +59,17 @@
 | 5 | Tue 17 | Reveal | "Swim. Serve. Smash. Without starting the car." | p7 clubhouse | Reel (icons animate) | DM FOREST |
 | 6 | Wed 18 | Life | "Screen time or skate time?" | p8 rollerblade track | Reel / TikTok | Comment SKATE or FOREST |
 | 7 | Thu 19 | Life | "We planted trees for a canopy your grandchildren will walk under." | p4 aerial | Single image + Threads | DM FOREST |
-| 8 | Fri 20 | Close | "This weekend only: walk the forest with us." | p1 gate + date card | Event post + Story | Book a viewing slot |
-| 9 | Sat 21 | Close | "Saturday slots filled. Sunday is open." *(only if true)* | Live gallery photos | Stories + post | WhatsApp now |
-| 10 | Sun 22 | Close | "Last day of Viewing Weekend. Which forest did you pick?" | Recap carousel | Carousel + Story | Book today / next week |
+| 8 | Fri 20 | Close | "We'll pick you up in a Hummer. You pick your forest." | Hummer at the gate + show unit | Reel + event post | PM "HUMMER" |
+| 9 | Sat 21 | Close | "Hummer's out on the forest loop right now." | Live Hummer + show unit clips | Stories + post | PM "HUMMER" for Sunday |
+| 10 | Sun 22 | Close | "Last day of Hummer Tour Weekend. Which forest did you pick?" | Recap carousel | Carousel + Story | Show unit open daily: PM "HUMMER" |
 
 **Posting times (Asia/Kuala_Lumpur):** main post at **12:30**, Reel/Story at **20:30**. Mon–Wed also gets **10:00**, which is the Metricool best-time peak.
 
 ## 4. Copy, ready to paste
 
 > Each post uses: EN body, a 中文 headline line and a BM closing line. Then a disclaimer footer.
-> **Footer (every post):** `Artist's impression only. Freehold. [APDL / Permit No.] · Developer: Team Keris Berhad · Marketed by Compass.RealEstate`
+> **Footer (every post):** `Artist's impression only. Freehold · From RM5xxk · APDL secured · Expected completion 2028 · Show unit open daily 9am–6pm · Developer: Team Keris Berhad · Marketed by Compass.RealEstate`
+> Add the full permit line before boosting: `No. Permit Iklan & Jualan: ____ · Tempoh Sah: ____ · Pihak Berkuasa: ____`
 
 ### Day 1 (Fri 13 Nov): Tease, backlanes
 **Hook:** Your kids' playground shouldn't be a car park. 🚗⚽
@@ -144,28 +152,30 @@ And because it's **freehold**, the home is yours to pass on.
 **与森林为邻，与自然共生：一座随时间愈发繁盛的森林家园。**
 *Pegangan bebas: warisan untuk generasi seterusnya.*
 
-👉 **DM FOREST** to book a private walk-through at the gallery.
+👉 **DM FOREST** to book a private Hummer tour and show unit walk-through.
 
-### Day 8 (Fri 20 Nov): Close, Viewing Weekend invite
-**Hook:** This weekend only: walk the forest with us. 🗓️
+### Day 8 (Fri 20 Nov): Close, Hummer Tour Weekend invite
+**Hook:** We'll pick you up in a Hummer. You pick your forest. 🚙🌳
 
-**FORReSsTA Viewing Weekend: Sat 21 and Sun 22 Nov**
-📍 [Gallery address] · ⏰ [Hours]
-✅ Private 30-minute slots, one family per slot
-✅ See the masterplan and pick your forest
-✅ Get the full price list and floor plans in person: [FROM RM___]
+**FORReSsTA Hummer Tour Weekend: Sat 21 and Sun 22 Nov**
+🚙 A private site tour in our Hummer, through all 5 forests
+🏡 Walk through the **show unit**, which is ready now
+💰 **From RM5xxk** · Freehold · Gated and guarded · APDL secured · Expected completion 2028
+⏰ Open daily, 9am–6pm
 
-**本周末：森林家园专属参观日。**
-*Hujung minggu ini: lawatan peribadi.*
+⚠️ **Weekend slots are limited. Book early.**
 
-👉 **Tap WhatsApp [wa.me link] or comment FOREST to lock your slot.**
+**本周末：搭乘悍马，专属森林家园导览。样板屋已开放参观。**
+*Lawatan peribadi dengan Hummer. Rumah contoh sedia dilawati.*
+
+👉 **PM us "HUMMER" or comment FOREST to lock your slot.**
 
 ### Day 9 (Sat 21 Nov): Close, live
-**Hook (Stories, every 2–3 hours):** "Live from the gallery right now 👀" with real photos of families at the model. Only post photos with their consent, and no faces without permission.
+**Hook (Stories, every 2–3 hours):** "Hummer's out on the forest loop right now 🚙👀" Use real clips of the Hummer driving the site and families at the show unit. Only post them with consent, and no faces without permission.
 
-**Main post:** *"Saturday's slots are moving. Sunday is still open."* Use this line only if it's true. Otherwise use "Families are picking their forests today. Which is yours?"
+**Main post:** *"Saturday's Hummer slots are moving. Sunday is still open."* Use this line only if it's true. Otherwise: "Families are touring the forests today. Your turn? Show unit open till 6pm."
 
-👉 **WhatsApp [wa.me link] for a Sunday slot.**
+👉 **PM "HUMMER" for a Sunday slot.**
 
 ### Day 10 (Sun 22 Nov): Close, recap
 **Hook:** Last day of Viewing Weekend. Which forest did you pick? 🌳
@@ -181,12 +191,12 @@ Recap carousel:
 **最后一天：你选择了哪一片森林？**
 *Hari terakhir. Hutan mana pilihan anda?*
 
-👉 **Missed it? Comment FOREST.** We'll book you a private viewing next week.
+👉 **Missed it? The show unit is open daily, 9am–6pm. PM "HUMMER"** and we'll book your private Hummer tour on a weekday. Weekend slots are limited, so book early.
 
 ## 5. WhatsApp follow-up script (reply within 5 minutes)
 
 1. **Instant reply:** "Hi! Thanks for your interest in FORReSsTA 🌳 Here's the brochure: [PDF]. Quick question: which forest caught your eye: Green, Magic, Scented, Rainforest or Golden?"
-2. **After they answer:** "Great choice. Would you like to see it in person? We have private slots on [day] at [time A] or [time B]. Which suits you?"
+2. **After they answer:** "Great choice. Come see it for real: the show unit is ready, and we'll take you around all 5 forests in our Hummer 🚙 Prices start from RM5xxk. We're open daily 9am–6pm, and weekend slots are limited. Would [day] at [time A] or [time B] suit you?"
 3. **Booked:** Send the address pin and the time. Send a **reminder 24 hours and 2 hours before**. FORReSsTA's show-up rate is 81%, so the reminders are what close that gap.
 4. **No reply in 24 hours:** Send one nudge with the Day 6 Reel. After that, stop.
 
@@ -206,7 +216,10 @@ Log every lead in the CRM with `source = organic_social`, `campaign = forressta_
 
 ## 7. Production checklist
 
-- [ ] Fill in the placeholders: price, APDL/permit no., completion date, gallery address and hours, wa.me link
+- [x] Price, APDL status, completion date, show unit, hours (confirmed 12 Nov)
+- [ ] Full permit line (number, validity, authority) for the footer
+- [ ] Shoot 3 Hummer clips: driving through the gate, along the forest loop, arriving at the show unit (for Days 8–9 and the Story)
+- [ ] Weekend slot grid: fix how many Hummer tours per hour, so "limited" is literally true
 - [ ] Crop the brochure pages into 1080×1350 (feed) and 1080×1920 (Reel/Story) images
 - [ ] Cut the Day 2 carousel: one card per forest, using the masterplan colours
 - [ ] Edit the Day 6 Reel, 15 seconds, with on-screen text
