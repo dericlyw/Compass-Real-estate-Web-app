@@ -51,8 +51,8 @@ The brochure PDFs are linked in §7. Direct download is blocked from this enviro
 | 8 | **Land price per sq ft** | **RM390/sf** (nett) | Meranti RM442, Dahlia RM422–434 | **FORReSsTA** (cheapest freehold land) |
 | 9 | **Cash to get in** | Package absorbs **down payment, legal fees, stamp duty and disbursement** (subject to loan margin) | 10% down payment plus fees: **about RM91k** (Meranti) or **about RM62–68k** (Dahlia) | **FORReSsTA** |
 | 10 | **Monthly instalment** (35 years at 3.6%) | RM2,515 + RM300 maintenance = **RM2,815** | Meranti RM2,749; Dahlia RM1,862–2,061 (+ guard fee, if any) | Dahlia cheaper; FORReSsTA ≈ Meranti |
-| 11 | **Built-up size** | **~1,540 sf** (agent figure, *verify*) | **Meranti 2,814 sf**, Dahlia 1,759–1,938 sf | **Taiko** ⚠️ |
-| 12 | **Price per sq ft built-up** | RM390 (nett) / RM433 (SPA) | Meranti **RM259**, Dahlia **RM281** | **Taiko** ⚠️ |
+| 11 | **Built-up size** | **Net internal 1,957 sf + 237 sf balcony + 301 sf porch** (approved drawing; agent's "1,540 sf" is wrong, see `RAINFOREST_UNIT_vs_TAIKO.md`) | **Meranti 2,814 sf** (incl. loft), Dahlia 1,759–1,938 sf | Meranti bigger; FORReSsTA beats Dahlia |
+| 12 | **Price per sq ft of house** | ≈ RM294 (nett ÷ est. gross 2,038 sf) / RM307 (÷ net internal 1,957 sf) | Meranti **RM259** (incl. loft), Dahlia **RM281** | Close; Taiko slightly lower. Confirm our official gross built-up |
 | 13 | **Ready date** | 2028 (agent page says Q1 2029) | **Ready now (CCC)** | **Taiko** ⚠️ |
 | 14 | **Township maturity** | New precinct; amenities to come | Hospital, international school, SJK(C), Econsave **open today** | **Taiko** ⚠️ |
 | 15 | **Location** | Panorama, Ipoh South: 5.6 km to AEON Station 18, 11 km to Ipoh town, 8 km to Botani Village | Inside Botani: 2.5 km to the hospital and school; 12 km to the city | Split: FORReSsTA nearer Station 18 and town |
